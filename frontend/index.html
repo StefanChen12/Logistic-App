@@ -1,0 +1,67 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Tracker</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: auto; padding: 20px; }
+        .form-group { margin-bottom: 10px; }
+        label { display: block; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; }
+        button { padding: 10px 15px; margin-top: 10px; }
+        .results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Package Tracker</h1>
+        <div class="form-group">
+            <label for="serial-number">Serial Number:</label>
+            <input type="text" id="serial-number" required>
+        </div>
+        <div class="form-group">
+            <label for="courier-service">Courier Service:</label>
+            <select id="courier-service">
+                <option value="usps">USPS</option>
+                <option value="ups">UPS</option>
+            </select>
+        </div>
+        <button id="track-btn">Track Package</button>
+
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        document.getElementById('track-btn').addEventListener('click', function() {
+            const serialNumber = document.getElementById('serial-number').value;
+            const courierService = document.getElementById('courier-service').value;
+            const resultsDiv = document.getElementById('results');
+
+            // Clear previous results
+            resultsDiv.textContent = '';
+
+            // Simple frontend validation
+            if (!serialNumber) {
+                resultsDiv.textContent = 'Please enter a serial number.';
+                return;
+            }
+
+            // Call the backend API
+            fetch(`/track?serial=${encodeURIComponent(serialNumber)}&courier=${courierService}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Display the results
+                    resultsDiv.textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    // Handle any errors
+                    resultsDiv.textContent = 'Error fetching tracking information.';
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</body>
+</html>
